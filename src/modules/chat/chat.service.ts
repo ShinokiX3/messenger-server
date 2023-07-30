@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { CreateChatDTO } from './dto';
@@ -10,10 +11,10 @@ import { Model } from 'mongoose';
 import { Chat, ChatDocument, IChat, IMessage } from './schemas/chat.schema';
 
 import { InjectModel } from '@nestjs/mongoose';
-import { parseToStringTime } from 'src/utils/parseToStringTime';
+import { parseToStringTime } from '../../utils/parseToStringTime';
 import { UsersService } from '../users/users.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { NewMessageEvent } from 'src/events/new.message.event';
+import { NewMessageEvent } from '../../events/new.message.event';
 
 //     @Prop()
 //     chatId: string;
