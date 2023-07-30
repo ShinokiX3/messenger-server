@@ -13,7 +13,7 @@ import { UserLoginDTO } from './dto';
 import { AuthUserResponse } from './response';
 import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from '../../guards/jwt-guard';
-import { AdminRoleGuard } from 'src/guards/roles-guard';
+import { AdminRoleGuard } from '../../guards/roles-guard';
 
 @Controller('auth')
 export class AuthController {

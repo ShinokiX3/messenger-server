@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { NewMessageEvent } from 'src/events/new.message.event';
+import { NewMessageEvent } from '../../events/new.message.event';
 
 @Injectable()
 export class NotificatonsService {

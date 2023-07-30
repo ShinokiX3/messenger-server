@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { JwtAuthGuard } from '../../guards/jwt-guard';
-import { AdminRoleGuard } from 'src/guards/roles-guard';
+import { AdminRoleGuard } from '../../guards/roles-guard';
 import { CreateChatDTO } from './dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { HttpStatus } from '@nestjs/common/enums';
