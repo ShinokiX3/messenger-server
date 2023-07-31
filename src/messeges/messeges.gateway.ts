@@ -9,6 +9,7 @@ import { UpdateMessegeDto } from './dto/update-messege.dto';
 import { WebSocketServer, ConnectedSocket } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { JoinUserDto } from './dto/join-user.dto';
+import { TypingMessageDto } from './dto/typing-message.dto';
 
 @WebSocketGateway({
     cors: {
@@ -31,9 +32,7 @@ export class MessegesGateway {
             client.id,
         );
 
-        // this.server.emit('message', message);
         this.server.to(createMessegeDto.room).emit('message', message);
-
         return message;
     }
 
@@ -66,16 +65,19 @@ export class MessegesGateway {
         @ConnectedSocket() client: Socket,
     ) {
         client.join(joinUserDto.room);
-        // client.to(joinUserDto.room).emit('message', { text: joinUserDto.room });
         return this.messegesService.identify(joinUserDto.name, client.id);
+        // client.to(joinUserDto.room).emit('message', { text: joinUserDto.room });
     }
 
     @SubscribeMessage('typing')
     async typing(
-        @MessageBody('isTyping') isTyping: boolean,
+        // @MessageBody('isTyping') isTyping: boolean,
+        @MessageBody() typingMessageDto: TypingMessageDto,
         @ConnectedSocket() client: Socket,
     ) {
         const name = await this.messegesService.getClientName(client.id);
-        client.broadcast.emit('typing', { name, isTyping });
+        client.broadcast
+            .to(typingMessageDto.room)
+            .emit('typing', { name, isTyping: typingMessageDto.isTyping });
     }
 }
