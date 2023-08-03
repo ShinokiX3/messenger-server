@@ -46,7 +46,6 @@ export class AuthController {
         return this.authService.checkPhone(dto);
     }
 
-    @UseGuards(AdminRoleGuard)
     @UseGuards(JwtAuthGuard)
     @Post('check')
     check(@Body() dto: any): Promise<any> {
