@@ -14,10 +14,15 @@ export interface IRead {
     quantity: number;
 }
 
+export type TCasualMessage = string;
+export type TWithImageMessage = { pictures: string[]; message: string };
+
+export type TCombinedMessageTypes = TCasualMessage | TWithImageMessage;
+
 export interface IMessage {
     userId: string;
     messageId: string;
-    message: string;
+    message: TCombinedMessageTypes;
     writed: Date;
     read: TMessageDeliveryStatus;
 }

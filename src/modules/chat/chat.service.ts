@@ -1,63 +1,25 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { CreateChatDTO } from './dto';
-import { TokenService } from '../token/token.service';
-import { AuthUserResponse } from '../auth/response';
 import { v4 as uuid } from 'uuid';
 
 import { Model } from 'mongoose';
 
-import { Chat, ChatDocument, IChat, IMessage } from './schemas/chat.schema';
+import {
+    Chat,
+    ChatDocument,
+    IChat,
+    IMessage,
+    TCombinedMessageTypes,
+    TWithImageMessage,
+} from './schemas/chat.schema';
 
 import { InjectModel } from '@nestjs/mongoose';
 import { parseToStringTime } from '../../utils/parseToStringTime';
 import { UsersService } from '../users/users.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { NewMessageEvent } from '../../events/new.message.event';
-
-//     @Prop()
-//     chatId: string;
-
-//     @Prop()
-//     created: Date;
-
-//     @Prop({ type: Object })
-//     messages: IMessages;
-
-//     @Prop({ type: Object })
-//     last: IMessage;
-
-//     @Prop({ type: Object })
-//     read: IRead;
-
-//     @Prop({
-//         type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Users' }],
-//     })
-//     participants: User[];
-
-// export type TMessageUnreadImportance = 'regular' | 'important';
-// export type TMessageDeliveryStatus = 'sended' | 'read';
-
-// interface IRead {
-//     importance: TMessageUnreadImportance;
-//     quantity: number;
-// }
-
-// interface IMessage {
-//     message: string;
-//     userId: string;
-//     writed: Date;
-//     read: TMessageDeliveryStatus;
-// }
-
-// interface IMessages {
-//     [day: string]: {
-//         [messageId: string]: IMessage;
-//     };
-// }
-
-// private readonly tokenService: TokenService,
+import { FileService, FileType } from '../file/file.service';
 
 @Injectable()
 export class ChatService {
@@ -65,6 +27,7 @@ export class ChatService {
         @InjectModel(Chat.name) private chatModel: Model<ChatDocument>,
         private readonly userService: UsersService,
         private eventEmitter: EventEmitter2,
+        private fileService: FileService,
     ) {}
 
     async createChat(user: any, dto: CreateChatDTO) {
@@ -226,7 +189,7 @@ export class ChatService {
     }: {
         userId: string;
         chatId: string;
-        message: string;
+        message: TCombinedMessageTypes;
     }) {
         try {
             const user = await this.userService.findUserById(userId);
@@ -284,6 +247,102 @@ export class ChatService {
             console.log(error);
         }
     }
+
+    // Photos
+
+    async sendWithPhotos(
+        dto: { userId: string; chatId: string; message: string },
+        picture,
+    ): Promise<any> {
+        try {
+            // TODO: make to multiply photos upload
+
+            const picturePath = this.fileService.createFile(
+                FileType.IMAGE,
+                picture,
+            );
+
+            const withImageMessage: TWithImageMessage = {
+                pictures: [picturePath],
+                message: dto.message,
+            };
+
+            const sendedMessage = await this.sendMessage({
+                ...dto,
+                message: withImageMessage,
+            });
+
+            return sendedMessage && null;
+        } catch (error) {
+            console.log(error);
+        }
+    }
 }
 
-// zxc
+//     @Prop()
+//     chatId: string;
+
+//     @Prop()
+//     created: Date;
+
+//     @Prop({ type: Object })
+//     messages: IMessages;
+
+//     @Prop({ type: Object })
+//     last: IMessage;
+
+//     @Prop({ type: Object })
+//     read: IRead;
+
+//     @Prop({
+//         type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Users' }],
+//     })
+//     participants: User[];
+
+// export type TMessageUnreadImportance = 'regular' | 'important';
+// export type TMessageDeliveryStatus = 'sended' | 'read';
+
+// interface IRead {
+//     importance: TMessageUnreadImportance;
+//     quantity: number;
+// }
+
+// interface IMessage {
+//     message: string;
+//     userId: string;
+//     writed: Date;
+//     read: TMessageDeliveryStatus;
+// }
+
+// interface IMessages {
+//     [day: string]: {
+//         [messageId: string]: IMessage;
+//     };
+// }
+
+// private readonly tokenService: TokenService,
+
+// async createProduct(dto: CreateProductDTO, picture): Promise<any> {
+//     try {
+//         const product = await this.productsModel.find({
+//             title: dto.title,
+//         });
+
+//         if (product.length < 1) {
+//             const picturePath = this.fileService.createFile(
+//                 FileType.IMAGE,
+//                 picture,
+//             );
+
+//             const product = this.productsModel.create({
+//                 ...dto,
+//                 picture: picturePath,
+//             });
+
+//             return product;
+//         }
+//         return { error: '', message: 'Product already exist' };
+//     } catch (e) {
+//         throw new BadRequestException('error');
+//     }
+// }

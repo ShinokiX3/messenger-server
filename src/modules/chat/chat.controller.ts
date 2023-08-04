@@ -1,20 +1,19 @@
 import {
     Body,
     Controller,
-    Delete,
     Post,
     Get,
-    Patch,
     Req,
     UseGuards,
     Res,
+    UploadedFiles,
+    UseInterceptors,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { JwtAuthGuard } from '../../guards/jwt-guard';
-import { AdminRoleGuard } from '../../guards/roles-guard';
 import { CreateChatDTO } from './dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { HttpStatus } from '@nestjs/common/enums';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @Controller('chat')
 export class ChatController {
@@ -37,16 +36,13 @@ export class ChatController {
         return this.chatService.getAllChats(user);
     }
 
-    // @UseGuards(JwtAuthGuard)
+    // On message chat list update
+
     @Get('/connection')
     getAllChatsConnection(
         @Req() request,
         @Res() response,
     ): Promise<boolean> | any {
-        // response.status(HttpStatus.OK);
-        // response.set('Connection', 'keep-alive');
-        // response.set('Content-Type', 'text/event-stream');
-        // response.set('Cache-Control', 'no-cache');
         const user = request.user;
         response.writeHead(200, {
             Connection: 'keep-alive',
@@ -57,9 +53,9 @@ export class ChatController {
             const chats = this.chatService.getAllChats(user);
             response.write(`data: ${JSON.stringify(chats)} \n\n`);
         });
-        // const user = request.user;
-        // return this.chatService.getAllChats(user);
     }
+
+    // Search
 
     @UseGuards(JwtAuthGuard)
     @Post('/search')
@@ -74,10 +70,30 @@ export class ChatController {
         return this.chatService.searchById(dto);
     }
 
-    // @UseGuards(JwtAuthGuard)
-    // @Get('/chat/all')
-    // getAllOrders(@Req() request): Promise<boolean> {
-    //     // return this.userService.getAllOrders(request);
-    //     return null;
-    // }
+    // Pictures
+
+    @UseGuards(JwtAuthGuard)
+    @Post('create')
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'picture', maxCount: 1 }]))
+    createProduct(@UploadedFiles() files, @Body() dto: any): Promise<any> {
+        const { picture } = files;
+
+        return this.chatService.sendWithPhotos(dto, picture);
+    }
 }
+
+// @UseGuards(JwtAuthGuard)
+
+// response.status(HttpStatus.OK);
+// response.set('Connection', 'keep-alive');
+// response.set('Content-Type', 'text/event-stream');
+// response.set('Cache-Control', 'no-cache');
+// const user = request.user;
+// return this.chatService.getAllChats(user);
+
+// @UseGuards(JwtAuthGuard)
+// @Get('/chat/all')
+// getAllOrders(@Req() request): Promise<boolean> {
+//     // return this.userService.getAllOrders(request);
+//     return null;
+// }
