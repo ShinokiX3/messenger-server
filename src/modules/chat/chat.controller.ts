@@ -1,3 +1,4 @@
+import { SocketService } from './../../socket/socket.service';
 import {
     Body,
     Controller,
@@ -14,13 +15,15 @@ import { JwtAuthGuard } from '../../guards/jwt-guard';
 import { CreateChatDTO } from './dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { MessegesGateway } from 'src/messeges/messeges.gateway';
+
+// import { MessegesGateway } from 'src/messeges/messeges.gateway';
 
 @Controller('chat')
 export class ChatController {
     constructor(
         private readonly chatService: ChatService,
-        private readonly messageGateway: MessegesGateway,
+        // private readonly messageGateway: MessegesGateway,
+        private readonly socketService: SocketService,
         private eventEmitter: EventEmitter2,
     ) {}
 
@@ -75,6 +78,14 @@ export class ChatController {
     // Pictures
 
     @UseGuards(JwtAuthGuard)
+    @Post('create')
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'picture', maxCount: 1 }]))
+    createProduct(@UploadedFiles() files, @Body() dto: any): Promise<any> {
+        const { picture } = files;
+        return this.chatService.sendWithPhotos(dto, picture);
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Post('send/photo')
     @UseInterceptors(FileFieldsInterceptor([{ name: 'picture', maxCount: 1 }]))
     async sendWithPhotos(
@@ -83,7 +94,8 @@ export class ChatController {
     ): Promise<any> {
         const { picture } = files;
         const message = await this.chatService.sendWithPhotos(dto, picture);
-        this.messageGateway.server.to(dto.chatId).emit('message', message);
+        // this.messageGateway.server.to(dto.chatId).emit('message', message);
+        this.socketService.socket.to(dto.chatId).emit('message', message);
         return message;
     }
 }

@@ -1,7 +1,11 @@
+import { SocketService } from 'src/socket/socket.service';
 import {
     WebSocketGateway,
     SubscribeMessage,
     MessageBody,
+    OnGatewayInit,
+    OnGatewayConnection,
+    OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { MessegesService } from './messeges.service';
 import { CreateMessegeDto } from './dto/create-messege.dto';
@@ -16,11 +20,16 @@ import { TypingMessageDto } from './dto/typing-message.dto';
         origin: '*',
     },
 })
-export class MessegesGateway {
+export class MessegesGateway
+    implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
     @WebSocketServer()
     server: Server;
 
-    constructor(private readonly messegesService: MessegesService) {}
+    constructor(
+        private readonly messegesService: MessegesService,
+        private socketService: SocketService,
+    ) {}
 
     @SubscribeMessage('createMessege')
     async create(
@@ -32,23 +41,24 @@ export class MessegesGateway {
             client.id,
         );
 
-        this.server.to(createMessegeDto.room).emit('message', message);
+        // this.server.to(createMessegeDto.room).emit('message', message);
+        this.socketService.socket
+            .to(createMessegeDto.room)
+            .emit('message', message);
         return message;
     }
 
-    // @SubscribeMessage('createWithImage')
-    // async createWithImage(
-    //     @MessageBody() createMessegeDto: CreateMessegeDto & { picture: File },
-    //     @ConnectedSocket() client: Socket,
-    // ) {
-    //     const message = await this.messegesService.createWithImage(
-    //         createMessegeDto,
-    //         createMessegeDto.picture,
-    //     );
+    afterInit(server: Server) {
+        this.socketService.socket = server;
+    }
 
-    //     this.server.to(createMessegeDto.room).emit('message', message);
-    //     return message;
-    // }
+    handleDisconnect(client: Socket) {
+        // this.logger.log(`Client disconnected: ${client.id}`);
+    }
+
+    handleConnection(client: Socket, ...args: any[]) {
+        // this.logger.log(`Client connected: ${client.id}`);
+    }
 
     @SubscribeMessage('findAllMesseges')
     findAll(@MessageBody('room') room: string) {
@@ -95,3 +105,17 @@ export class MessegesGateway {
             .emit('typing', { name, isTyping: typingMessageDto.isTyping });
     }
 }
+
+// @SubscribeMessage('createWithImage')
+// async createWithImage(
+//     @MessageBody() createMessegeDto: CreateMessegeDto & { picture: File },
+//     @ConnectedSocket() client: Socket,
+// ) {
+//     const message = await this.messegesService.createWithImage(
+//         createMessegeDto,
+//         createMessegeDto.picture,
+//     );
+
+//     this.server.to(createMessegeDto.room).emit('message', message);
+//     return message;
+// }

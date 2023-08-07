@@ -14,6 +14,8 @@ import { FileModule } from './modules/file/file.module';
 import { MessegesModule } from './messeges/messeges.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { SocketModule } from './socket/socket.module';
+import { AppGateway } from './app.geteway';
 
 @Module({
     imports: [
@@ -29,6 +31,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
         TokenModule,
         FileModule,
         MessegesModule,
+        SocketModule,
         EventEmitterModule.forRoot(),
     ],
 })

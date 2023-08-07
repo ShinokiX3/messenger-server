@@ -6,12 +6,14 @@ import { ChatController } from './chat.controller';
 import { Chat, ChatSchema } from './schemas/chat.schema';
 import { UsersModule } from '../users/users.module';
 import { FileService } from '../file/file.service';
-import { MessegesModule } from 'src/messeges/messeges.module';
-import { MessegesGateway } from 'src/messeges/messeges.gateway';
-import { MessegesService } from 'src/messeges/messeges.service';
+
+// import { MessegesGateway } from 'src/messeges/messeges.gateway';
+// import { MessegesService } from 'src/messeges/messeges.service';
 
 // import { FileService } from '../file/file.service';
 // import { TokenModule } from '../token/token.module';
+
+// MessegesService, MessegesGateway
 
 @Module({
     imports: [
@@ -19,7 +21,7 @@ import { MessegesService } from 'src/messeges/messeges.service';
         UsersModule,
     ],
     controllers: [ChatController],
-    providers: [ChatService, FileService, MessegesService, MessegesGateway],
+    providers: [ChatService, FileService],
     exports: [ChatService],
 })
 export class ChatModule {}
