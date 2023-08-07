@@ -84,6 +84,7 @@ export class ChatController {
         const { picture } = files;
         const message = this.chatService.sendWithPhotos(dto, picture);
         this.server.to(dto.chatId).emit('message', message);
+        return message;
     }
 }
 
