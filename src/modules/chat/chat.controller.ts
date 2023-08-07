@@ -14,9 +14,14 @@ import { JwtAuthGuard } from '../../guards/jwt-guard';
 import { CreateChatDTO } from './dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { WebSocketServer } from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
 
 @Controller('chat')
 export class ChatController {
+    @WebSocketServer()
+    server: Server;
+
     constructor(
         private readonly chatService: ChatService,
         private eventEmitter: EventEmitter2,
@@ -77,7 +82,8 @@ export class ChatController {
     @UseInterceptors(FileFieldsInterceptor([{ name: 'picture', maxCount: 1 }]))
     sendWithPhotos(@UploadedFiles() files, @Body() dto: any): Promise<any> {
         const { picture } = files;
-        return this.chatService.sendWithPhotos(dto, picture);
+        const message = this.chatService.sendWithPhotos(dto, picture);
+        this.server.to(dto.chatId).emit('message', message);
     }
 }
 

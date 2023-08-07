@@ -36,6 +36,20 @@ export class MessegesGateway {
         return message;
     }
 
+    @SubscribeMessage('createWithImage')
+    async createWithImage(
+        @MessageBody() createMessegeDto: CreateMessegeDto,
+        @ConnectedSocket() client: Socket,
+    ) {
+        const message = await this.messegesService.create(
+            createMessegeDto,
+            client.id,
+        );
+
+        this.server.to(createMessegeDto.room).emit('message', message);
+        return message;
+    }
+
     @SubscribeMessage('findAllMesseges')
     findAll(@MessageBody('room') room: string) {
         return this.messegesService.findAll(room);

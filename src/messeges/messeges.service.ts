@@ -44,6 +44,31 @@ export class MessegesService {
         return messages;
     }
 
+    async createWithImage(
+        createMessegeDto: CreateMessegeDto,
+        clientId: string,
+    ) {
+        const { userId, message, room } = createMessegeDto;
+
+        if (this.messeges[room] === undefined) this.messeges[room] = [];
+
+        this.messeges[room].push(message);
+
+        const messages = await this.chatService.sendWithPhotos(
+            {
+                userId: userId,
+                chatId: room,
+                message: message,
+            },
+            '',
+        );
+
+        // console.log(messages);
+
+        // return messege;
+        return messages;
+    }
+
     async findAll(room: string) {
         return await this.chatService.search(room);
         // return this.messeges[room];
