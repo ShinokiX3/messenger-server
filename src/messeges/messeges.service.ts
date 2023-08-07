@@ -42,24 +42,24 @@ export class MessegesService {
         return messages;
     }
 
-    async createWithImage(createMessegeDto: CreateMessegeDto, picture: File) {
-        const { userId, message, room } = createMessegeDto;
+    // async createWithImage(createMessegeDto: CreateMessegeDto, picture: File) {
+    //     const { userId, message, room } = createMessegeDto;
 
-        if (this.messeges[room] === undefined) this.messeges[room] = [];
+    //     if (this.messeges[room] === undefined) this.messeges[room] = [];
 
-        this.messeges[room].push(message);
+    //     this.messeges[room].push(message);
 
-        const messages = await this.chatService.sendWithPhotos(
-            {
-                userId: userId,
-                chatId: room,
-                message: message,
-            },
-            picture,
-        );
+    //     const messages = await this.chatService.sendWithPhotos(
+    //         {
+    //             userId: userId,
+    //             chatId: room,
+    //             message: message,
+    //         },
+    //         picture,
+    //     );
 
-        return messages;
-    }
+    //     return messages;
+    // }
 
     async findAll(room: string) {
         return await this.chatService.search(room);

@@ -36,19 +36,19 @@ export class MessegesGateway {
         return message;
     }
 
-    @SubscribeMessage('createWithImage')
-    async createWithImage(
-        @MessageBody() createMessegeDto: CreateMessegeDto & { picture: File },
-        @ConnectedSocket() client: Socket,
-    ) {
-        const message = await this.messegesService.createWithImage(
-            createMessegeDto,
-            createMessegeDto.picture,
-        );
+    // @SubscribeMessage('createWithImage')
+    // async createWithImage(
+    //     @MessageBody() createMessegeDto: CreateMessegeDto & { picture: File },
+    //     @ConnectedSocket() client: Socket,
+    // ) {
+    //     const message = await this.messegesService.createWithImage(
+    //         createMessegeDto,
+    //         createMessegeDto.picture,
+    //     );
 
-        this.server.to(createMessegeDto.room).emit('message', message);
-        return message;
-    }
+    //     this.server.to(createMessegeDto.room).emit('message', message);
+    //     return message;
+    // }
 
     @SubscribeMessage('findAllMesseges')
     findAll(@MessageBody('room') room: string) {
