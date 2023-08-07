@@ -77,7 +77,6 @@ export class ChatController {
     @UseInterceptors(FileFieldsInterceptor([{ name: 'picture', maxCount: 1 }]))
     sendWithPhotos(@UploadedFiles() files, @Body() dto: any): Promise<any> {
         const { picture } = files;
-
         return this.chatService.sendWithPhotos(dto, picture);
     }
 }

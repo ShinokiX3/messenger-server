@@ -257,10 +257,14 @@ export class ChatService {
         try {
             // TODO: make to multiply photos upload
 
+            console.log(dto.userId, dto.chatId, dto.message);
+
             const picturePath = this.fileService.createFile(
                 FileType.IMAGE,
                 picture,
             );
+
+            console.log(picturePath);
 
             const withImageMessage: TWithImageMessage = {
                 pictures: [picturePath],
