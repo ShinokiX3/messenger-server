@@ -20,7 +20,7 @@ import { MessegesGateway } from 'src/messeges/messeges.gateway';
 export class ChatController {
     constructor(
         private readonly chatService: ChatService,
-        private readonly messageGateway: MessegesGateway,
+        // private readonly messageGateway: MessegesGateway,
         private eventEmitter: EventEmitter2,
     ) {}
 
@@ -83,7 +83,7 @@ export class ChatController {
     ): Promise<any> {
         const { picture } = files;
         const message = await this.chatService.sendWithPhotos(dto, picture);
-        this.messageGateway.server.to(dto.chatId).emit('message', message);
+        // this.messageGateway.server.to(dto.chatId).emit('message', message);
         return message;
     }
 }
