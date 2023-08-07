@@ -38,12 +38,12 @@ export class MessegesGateway {
 
     @SubscribeMessage('createWithImage')
     async createWithImage(
-        @MessageBody() createMessegeDto: CreateMessegeDto,
+        @MessageBody() createMessegeDto: CreateMessegeDto & { picture: File },
         @ConnectedSocket() client: Socket,
     ) {
-        const message = await this.messegesService.create(
+        const message = await this.messegesService.createWithImage(
             createMessegeDto,
-            client.id,
+            createMessegeDto.picture,
         );
 
         this.server.to(createMessegeDto.room).emit('message', message);

@@ -276,7 +276,7 @@ export class ChatService {
                 message: withImageMessage,
             });
 
-            return sendedMessage && null;
+            return sendedMessage;
         } catch (error) {
             console.log(error);
         }
