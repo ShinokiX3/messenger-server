@@ -73,9 +73,9 @@ export class ChatController {
     // Pictures
 
     @UseGuards(JwtAuthGuard)
-    @Post('create')
+    @Post('send/photo')
     @UseInterceptors(FileFieldsInterceptor([{ name: 'picture', maxCount: 1 }]))
-    createProduct(@UploadedFiles() files, @Body() dto: any): Promise<any> {
+    sendWithPhotos(@UploadedFiles() files, @Body() dto: any): Promise<any> {
         const { picture } = files;
 
         return this.chatService.sendWithPhotos(dto, picture);
