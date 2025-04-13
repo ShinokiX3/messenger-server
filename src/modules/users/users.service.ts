@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDTO } from './dto';
@@ -12,7 +13,8 @@ import { Favourites, FavouritesDocument } from './schemas/favourites.schema';
 import { Orders, OrdersDocument } from './schemas/orders.schema';
 
 import { InjectModel } from '@nestjs/mongoose';
-import { ChatService } from '../chat/chat.service';
+// import { ChatService } from '../chat/chat.service';
+import { FileService, FileType } from '../file/file.service';
 
 @Injectable()
 export class UsersService {
@@ -24,6 +26,7 @@ export class UsersService {
         private favouritesModel: Model<FavouritesDocument>,
         @InjectModel(Orders.name) private OrdersModel: Model<OrdersDocument>,
         private readonly tokenService: TokenService,
+        private fileService: FileService,
     ) {}
 
     async hashPassword(password: string): Promise<string> {
@@ -85,6 +88,7 @@ export class UsersService {
                 }),
                 friends: [],
                 chats: [],
+                picture: []
             });
 
             return user;
@@ -154,6 +158,36 @@ export class UsersService {
             });
 
             return users;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    // Edit Profile
+
+    async setProfilePhoto(
+        dto: { userId: string; chatId: string; message: string },
+        picture,
+    ): Promise<any> {
+        try {
+            const picturePath = this.fileService.createFile(
+                FileType.IMAGE,
+                picture,
+            );
+
+            const user = await this.userModel.find({ userId: dto.userId });
+            const existingPictures = user[0]?.picture || [];
+            
+            const updatedPictures = [picturePath, ...existingPictures];
+
+            await this.userModel.updateOne(
+                { userId: dto.userId },
+                {
+                    $set: { picture: updatedPictures },
+                },
+            );
+
+            return picturePath;
         } catch (error) {
             console.log(error);
         }

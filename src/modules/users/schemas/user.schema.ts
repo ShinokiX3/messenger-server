@@ -32,7 +32,7 @@ export class User {
     birthdate: Date;
 
     @Prop()
-    picture: string;
+    picture: string[];
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Role' }] })
     role: Role[];

@@ -118,12 +118,18 @@ export class ChatService {
                             ? await this.userService.findUserById(
                                   String(stranger[0]),
                               )
-                            : [{ _id: asking[0]._id, name: 'Saved Messages' }];
+                            : [{ _id: asking[0]._id, name: 'Saved Messages', picture: asking[0]?.picture }];
+                    const picture = response[0]?.picture ? response[0]?.picture : [];
                     const newChat = {
                         ...chat._doc,
                         participants: [
                             { id: response[0]._id, title: response[0].name },
+                            { 
+                                asking_picture: asking[0]?.picture,
+                                stranger_picture: stranger[0]?.picture 
+                            },
                         ],
+                        picture
                     };
                     return newChat;
                 }),
@@ -176,7 +182,9 @@ export class ChatService {
             const users = await this.userService.findUsersByIds(
                 chat[0].participants,
             );
-            return [chat[0], users];
+
+            const participants = await users.map((user) => ([{ name: user[0].name, picture: user[0].picture }]));
+            return [chat[0], participants];
         } catch (error) {
             console.log(error);
         }

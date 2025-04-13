@@ -10,6 +10,7 @@ import { Orders, OrdersSchema } from './schemas/orders.schema';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { TokenModule } from '../token/token.module';
+import { FileService } from '../file/file.service';
 
 @Module({
     imports: [
@@ -24,7 +25,7 @@ import { TokenModule } from '../token/token.module';
         TokenModule,
     ],
     controllers: [UsersController],
-    providers: [UsersService],
+    providers: [UsersService, FileService],
     exports: [UsersService],
 })
 export class UsersModule {}
