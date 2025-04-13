@@ -166,7 +166,8 @@ export class UsersService {
     // Edit Profile
 
     async setProfilePhoto(
-        dto: { userId: string; chatId: string; message: string },
+        user,
+        dto: { userId: string },
         picture,
     ): Promise<any> {
         try {
@@ -175,16 +176,15 @@ export class UsersService {
                 picture,
             );
 
-            const user = await this.userModel.find({ userId: dto.userId });
-            const existingPictures = user[0]?.picture || [];
-            
+            const _id = user[0]._id;
+            const _user = await this.userModel.findOne({ _id });
+
+            const existingPictures = _user[0]?.picture || [];
             const updatedPictures = [picturePath, ...existingPictures];
 
             await this.userModel.updateOne(
-                { userId: dto.userId },
-                {
-                    $set: { picture: updatedPictures },
-                },
+                { _id },
+                { $set: { picture: updatedPictures } },
             );
 
             return picturePath;

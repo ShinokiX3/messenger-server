@@ -40,11 +40,13 @@ export class UsersController {
     @Post('profile/photo')
     @UseInterceptors(FileFieldsInterceptor([{ name: 'picture', maxCount: 1 }]))
     async sendWithPhotos(
+        @Req() request,
         @UploadedFiles() files,
         @Body() dto: any,
     ): Promise<any> {
         const { picture } = files;
-        const photo = await this.userService.setProfilePhoto(dto, picture);
+        const user = request.user;
+        const photo = await this.userService.setProfilePhoto(user, dto, picture);
         
         return photo;
     }

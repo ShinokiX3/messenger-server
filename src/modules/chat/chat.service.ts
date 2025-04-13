@@ -182,7 +182,7 @@ export class ChatService {
             const users = await this.userService.findUsersByIds(
                 chat[0].participants,
             );
-
+            
             const participants = await users.map((user) => ([{ name: user[0].name, picture: user[0].picture }]));
             return [chat[0], participants];
         } catch (error) {
